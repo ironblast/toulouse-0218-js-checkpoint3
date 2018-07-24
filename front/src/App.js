@@ -36,14 +36,32 @@ class App extends Component {
       body: JSON.stringify(this.state)
     })
     .then(res => res.json())
-    .then(items => {
-      console.log(items)
+    .then(item => {
+      const items = [...this.state.items]
+      items.push(item)
+      this.setState({ items })
+      console.log(item)
     })
   }
 
   handleSubmit = (event) => {
     event.preventDefault()
     this.createItem()    
+  }
+
+  handleDelete = (id) => {
+    fetch(`/api/items/${id}`, {
+      method: 'DELETE'
+    })
+    .then(res => res.json())
+    .then( () => {
+      const items = [...this.state.items]
+      const index = items.findIndex(item => {
+        return item.id === id
+      })
+      items.splice(index, 1)
+      this.setState({ items })
+    })
   }
 
   render() {
@@ -70,7 +88,7 @@ class App extends Component {
 
         <div className="PlayaList-list">
           {this.state.items.map(
-            (item, key) => <Item item={item} key={key}/>
+            (item, key) => <Item item={item} key={key} handleDelete={this.handleDelete} />
           )}
         </div>
 
